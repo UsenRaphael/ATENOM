@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.classList.add("js");</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATENOM - Expense Tracker</title>
+  <link rel="stylesheet" href="../static/style.css">
+</head>
+<body class="no-anim">
+
+  <!-- ========== LOADING SCREEN ========== -->
+  <div id="atenom-loader" aria-hidden="false">
+    <svg class="atenom-loader-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M12 82 49 14 88 82H68L49 47 31 82H12Z" fill="currentColor"/>
+      <path d="M31 82 49 49 68 82" stroke="var(--bg)" stroke-width="8"/>
+    </svg>
+    <span class="atenom-loader-name">ATENOM</span>
+  </div>
+
+  <!-- Failsafe: hides the loader even if script.js fails to load or errors.
+       Runs before script.js, so it never depends on it. -->
+  <script>
+    (function () {
+      var loader = document.getElementById("atenom-loader");
+      function hide() {
+        loader.classList.add("loader-hidden");
+        loader.setAttribute("aria-hidden", "true");
+      }
+      window.addEventListener("load", hide, { once: true });
+      window.addEventListener("pageshow", hide);
+      setTimeout(hide, 3000);   // never spin longer than 3 seconds
+    })();
+  </script>
+
+  <!-- ========== SITE HEADER ========== -->
+  <header class="site-header" id="site-header">
+    <div class="header-left">
+      <a class="logo" href="#home" aria-label="ATENOM home">
+        <svg class="atenom-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <path d="M12 82 49 14 88 82H68L49 47 31 82H12Z" fill="currentColor"/>
+          <path d="M31 82 49 49 68 82" stroke="var(--sidebar-bg)" stroke-width="8"/>
+        </svg>
+        <span>ATENOM</span>
+      </a>
+    </div>
+
+    <nav class="main-nav" aria-label="Main">
+
+      <div class="nav-item" data-menu>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">Features <svg class="caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="mega mega-wide">
+          <div class="mega-grid">
+            <div class="mega-col">
+              <p class="mega-title">Track</p>
+              <a class="mega-link" href="#home" data-scroll="feat-categories"><span class="mi">🏷️</span><span><strong>Custom categories</strong><em>Groceries, data, church, fuel…</em></span></a>
+              <a class="mega-link" href="#expenses"><span class="mi">🧾</span><span><strong>Expense log</strong><em>Search, sort, edit and undo</em></span></a>
+            </div>
+            <div class="mega-col">
+              <p class="mega-title">Plan</p>
+              <a class="mega-link" href="#home" data-scroll="feat-budgets"><span class="mi">🎯</span><span><strong>Monthly budgets</strong><em>Warnings at 75% and 100%</em></span></a>
+              <a class="mega-link" href="#overview"><span class="mi">📈</span><span><strong>Dashboard</strong><em>Everything at a glance</em></span></a>
+            </div>
+            <div class="mega-col">
+              <p class="mega-title">Understand</p>
+              <a class="mega-link" href="#home" data-scroll="feat-reports"><span class="mi">📊</span><span><strong>Reports and charts</strong><em>Trends, shares, comparisons</em></span></a>
+              <a class="mega-link" href="#home" data-scroll="feat-privacy"><span class="mi">🔒</span><span><strong>Export and privacy</strong><em>Your data stays with you</em></span></a>
+            </div>
+            <a class="mega-promo" href="#overview">
+              <span class="promo-orb" aria-hidden="true"></span>
+              <strong>See it in action</strong>
+              <em>Open the app and log your first expense in under a minute.</em>
+              <span class="promo-go">Open the app →</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item" data-menu data-views="resources faq contact">
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">Resources <svg class="caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="mega mega-narrow">
+          <div class="mega-col">
+            <a class="mega-link" href="#resources"><span class="mi">📚</span><span><strong>Help center</strong><em>Search every guide</em></span></a>
+            <a class="mega-link" href="#resources" data-scroll="guides"><span class="mi">🧭</span><span><strong>Guides</strong><em>Step by step, start to finish</em></span></a>
+            <a class="mega-link" href="#faq"><span class="mi">💬</span><span><strong>FAQ</strong><em>Quick answers</em></span></a>
+            <a class="mega-link" href="#contact"><span class="mi">✉️</span><span><strong>Contact</strong><em>Talk to a human</em></span></a>
+          </div>
+        </div>
+      </div>
+
+      <a class="nav-plain" href="#about" data-view="about">About</a>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Accounts are coming later: Log in and Sign up are placeholders for now -->
+      <button class="text-btn" data-action="auth" data-auth="login">Log in</button>
+      <button class="secondary auth-btn" data-action="auth" data-auth="signup">Sign up</button>
+      <a class="cta-btn app-btn" href="#overview">Open app</a>
+      <button id="theme-toggle" class="icon-btn" aria-label="Switch theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <!-- Phones: the website links, as a row you can swipe -->
+    <nav class="mobile-nav" aria-label="Website pages">
+      <a href="#home" data-view="home">Home</a>
+      <a href="#resources" data-view="resources">Resources</a>
+      <a href="#about" data-view="about">About</a>
+      <a href="#faq" data-view="faq">FAQ</a>
+      <a href="#contact" data-view="contact">Contact</a>
+    </nav>
+
+    <main class="content">
+
+      <!-- Top bar -->
+      <header class="top-bar">
+        <div class="top-left">
+          <div>
+            <h1 id="page-title">Good morning 👋</h1>
+            <p id="page-subtitle">Here is where your money went.</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <input type="search" id="search" placeholder="Search expenses...">
+          <button type="button" id="budget-card" class="budget-chip" aria-label="Set monthly budgets">
+            <span class="bc-label">Budget</span>
+            <span class="bc-value" id="sidebar-budget">Not set</span>
+            <span class="bc-edit" aria-hidden="true">＋</span>
+          </button>
+          <select id="currency-select" aria-label="Currency"></select>
+          <button id="open-modal-btn">+ Add</button>
+        </div>
+      </header>
+
+      <!-- ================= PAGE: OVERVIEW ================= -->
+      <div class="view" id="view-overview" data-view="overview">
+
+        <section class="stats">
+          <div class="card">
+            <p class="card-label">Income <span class="ov-month-tag"></span></p>
+            <p class="card-value income-val" id="inc-month">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Spent <span class="ov-month-tag"></span></p>
+            <p class="card-value" id="month-total">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Cashflow <span class="ov-month-tag"></span></p>
+            <p class="card-value" id="cashflow">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Budget left <span class="ov-month-tag"></span></p>
+            <p class="card-value" id="budget-left">0</p>
+          </div>
+        </section>
+
+        <section class="ov-top">
+          <div class="card quick">
+            <h3>Quick actions</h3>
+            <button type="button" class="qa-btn" id="qa-expense"><span class="qa-ico">↑</span> New expense</button>
+            <button type="button" class="qa-btn qa-income" id="qa-income"><span class="qa-ico">↓</span> New income</button>
+            <label class="ov-month-label" for="ov-month">Month</label>
+            <input type="month" id="ov-month" aria-label="Month to show">
+            <button type="button" class="filter-btn manage-btn" data-action="manage-categories">⚙ Categories</button>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Monthly charts</h3>
+              <div class="seg" data-seg="chart">
+                <button type="button" class="seg-btn active" data-mode="expense">↑ Expense</button>
+                <button type="button" class="seg-btn" data-mode="income">↓ Income</button>
+              </div>
+            </div>
+            <div class="chart" id="line-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Breakdown</h3>
+              <div class="seg" data-seg="donut">
+                <button type="button" class="seg-btn active" data-mode="expense">↑ Expense</button>
+                <button type="button" class="seg-btn" data-mode="income">↓ Income</button>
+              </div>
+            </div>
+            <div id="donut-chart"></div>
+          </div>
+        </section>
+
+        <section class="ov-mid">
+          <div class="card">
+            <div class="card-head">
+              <h3>Categories</h3>
+              <span class="h3-sub ov-month-tag"></span>
+            </div>
+            <div id="budget-bars" class="cat-cards">
+              <!-- JavaScript will add one card per category here -->
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Expenses</h3>
+              <a class="view-all" href="#expenses">View all →</a>
+            </div>
+            <div id="exp-groups" class="groups"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Income</h3>
+              <button type="button" class="filter-btn" id="inc-add-btn">+ Add</button>
+            </div>
+            <div id="inc-groups" class="groups"></div>
+          </div>
+        </section>
+
+        <section class="card monthly-stats">
+          <div class="card-head">
+            <h3>Monthly stats</h3>
+            <div class="ms-year">
+              <button type="button" class="year-btn" id="ms-prev" aria-label="Previous year">‹</button>
+              <span id="ms-year"></span>
+              <button type="button" class="year-btn" id="ms-next" aria-label="Next year">›</button>
+            </div>
+          </div>
+          <div class="seg seg-wide" id="ms-tabs">
+            <button type="button" class="seg-btn active" data-q="all">All</button>
+            <button type="button" class="seg-btn" data-q="1">Q1</button>
+            <button type="button" class="seg-btn" data-q="2">Q2</button>
+            <button type="button" class="seg-btn" data-q="3">Q3</button>
+            <button type="button" class="seg-btn" data-q="4">Q4</button>
+          </div>
+          <div class="ms-grid" id="ms-grid"></div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: EXPENSES ================= -->
+      <div class="view hidden" id="view-expenses" data-view="expenses">
+
+        <div class="sec-title-row">
+          <h2>Expenses</h2>
+          <p>Search, filter, sort, edit and export.</p>
+        </div>
+
+        <section class="stats">
+          <div class="card">
+            <p class="card-label">Showing</p>
+            <p class="card-value" id="x-count">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Total of these</p>
+            <p class="card-value" id="x-total">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Average</p>
+            <p class="card-value" id="x-avg">0</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Largest</p>
+            <p class="card-value" id="x-max">0</p>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card">
+            <div class="filters" id="filters">
+              <!-- JavaScript builds the category buttons here -->
+            </div>
+
+            <div class="exp-controls">
+              <label class="ctl">Period
+                <select id="exp-period">
+                  <option value="all">All time</option>
+                  <option value="month">This month</option>
+                  <option value="last-month">Last month</option>
+                  <option value="30d">Last 30 days</option>
+                  <option value="year">This year</option>
+                </select>
+              </label>
+              <label class="ctl">Sort by
+                <select id="exp-sort">
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="highest">Highest amount</option>
+                  <option value="lowest">Lowest amount</option>
+                  <option value="name">Name A to Z</option>
+                </select>
+              </label>
+              <button class="secondary" id="export-btn">⬇ Export CSV</button>
+            </div>
+
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="expense-list">
+                  <!-- JavaScript will add rows here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: REPORTS ================= -->
+      <div class="view hidden" id="view-reports" data-view="reports">
+
+        <div class="sec-title-row">
+          <h2>Reports</h2>
+          <p>Where your money goes, and how it changes.</p>
+        </div>
+
+        <section class="report-bar">
+          <label class="ctl">Period
+            <select id="report-period">
+              <option value="month">This month</option>
+              <option value="30d">Last 30 days</option>
+              <option value="3m">Last 3 months</option>
+              <option value="6m">Last 6 months</option>
+              <option value="year">This year</option>
+              <option value="all">All time</option>
+            </select>
+          </label>
+          <span class="range-note" id="report-range"></span>
+        </section>
+
+        <section class="stats">
+          <div class="card">
+            <p class="card-label">Total spent</p>
+            <p class="card-value" id="r-total">0</p>
+            <p class="card-sub" id="r-delta"></p>
+          </div>
+          <div class="card">
+            <p class="card-label">Daily average</p>
+            <p class="card-value" id="r-avg">0</p>
+            <p class="card-sub">per day so far</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Largest expense</p>
+            <p class="card-value" id="r-max">-</p>
+            <p class="card-sub" id="r-max-name"></p>
+          </div>
+          <div class="card">
+            <p class="card-label">Transactions</p>
+            <p class="card-value" id="r-count">0</p>
+            <p class="card-sub" id="r-cats"></p>
+          </div>
+        </section>
+
+        <section class="charts">
+          <div class="card">
+            <h3>Spending trend <span class="h3-sub" id="trend-sub"></span></h3>
+            <div class="chart" id="trend-chart"></div>
+          </div>
+          <div class="card">
+            <h3>By category</h3>
+            <div id="report-donut"></div>
+          </div>
+        </section>
+
+        <section class="bottom">
+          <div class="card">
+            <h3>Category ranking</h3>
+            <div id="rank-list"></div>
+          </div>
+          <div class="card">
+            <h3>Biggest expenses</h3>
+            <div id="top-expenses"></div>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card">
+            <h3>Budget vs actual <span class="h3-sub">this month</span></h3>
+            <div id="budget-report"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: HOME ================= -->
+      <div class="view site hidden" id="view-home" data-view="home">
+
+        <!-- HERO -->
+        <section class="hero-home" data-live>
+          <div class="bg-orbs" aria-hidden="true">
+            <span class="orb-p" data-depth="0.10"><i class="orb o1"></i></span>
+            <span class="orb-p" data-depth="-0.07"><i class="orb o2"></i></span>
+            <span class="orb-p" data-depth="0.16"><i class="orb o3"></i></span>
+            <span class="grid-bg"></span>
+          </div>
+
+          <div class="wrap hero-grid">
+            <div class="hero-copy">
+              <span class="badge reveal"><span class="pulse-dot"></span>No sign-up needed · Your data stays on your device</span>
+              <h1 class="reveal d1">Know exactly where your money goes.</h1>
+              <p class="hero-sub reveal d2">
+                Track every
+                <span class="rotator" aria-hidden="true"><span class="rot-list"><b>grocery run</b><b>data bundle</b><b>rent payment</b><b>tithe</b><b>school fee</b><b>fuel stop</b><b>grocery run</b></span></span>
+                in your own categories, set budgets that warn you early, and read clear reports.
+              </p>
+              <div class="hero-actions reveal d3">
+                <a class="cta-btn big" href="#overview">Open the app</a>
+                <a class="cta-btn ghost big" href="#home" data-scroll="feat-categories">See how it works</a>
+              </div>
+              <ul class="hero-points reveal d4">
+                <li>Custom categories</li>
+                <li>14 currencies</li>
+                <li>Export to CSV</li>
+              </ul>
+            </div>
+
+            <div class="hero-visual reveal d2" aria-hidden="true">
+              <div class="mock-wrap" data-tilt>
+                <div class="mock">
+                  <div class="mock-bar"><i></i><i></i><i></i><span>ATENOM · Overview</span></div>
+                  <div class="mock-body">
+                    <div class="mock-stats">
+                      <div class="ms"><small>Total spent</small><b>$358,734</b></div>
+                      <div class="ms"><small>This month</small><b>$64,277</b></div>
+                      <div class="ms"><small>Budget left</small><b class="good">$18,420</b></div>
+                    </div>
+                    <div class="mock-charts">
+                      <div class="mock-line">
+                        <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                          <defs><linearGradient id="mockArea" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" style="stop-color: var(--accent); stop-opacity: 0.45"/>
+                            <stop offset="1" style="stop-color: var(--accent); stop-opacity: 0"/>
+                          </linearGradient></defs>
+                          <line x1="0" y1="30" x2="300" y2="30" class="mgrid"/>
+                          <line x1="0" y1="60" x2="300" y2="60" class="mgrid"/>
+                          <line x1="0" y1="90" x2="300" y2="90" class="mgrid"/>
+                          <path d="M0,92 C30,84 45,52 75,60 C105,68 118,96 150,70 C182,44 196,28 225,40 C255,52 272,30 300,18 L300,120 L0,120 Z" fill="url(#mockArea)"/>
+                          <path d="M0,92 C30,84 45,52 75,60 C105,68 118,96 150,70 C182,44 196,28 225,40 C255,52 272,30 300,18" class="mline" vector-effect="non-scaling-stroke"/>
+                        </svg>
+                        <span class="wipe"></span>
+                      </div>
+                      <div class="mock-donut">
+                        <svg viewBox="0 0 120 120">
+                          <g class="donut-spin">
+                            <circle cx="60" cy="60" r="38" fill="none" stroke="#3ddc97" stroke-width="16" pathLength="100" stroke-dasharray="42 58" transform="rotate(-90 60 60)"/>
+                            <circle cx="60" cy="60" r="38" fill="none" stroke="#9d8cff" stroke-width="16" pathLength="100" stroke-dasharray="30 70" stroke-dashoffset="-43" transform="rotate(-90 60 60)"/>
+                            <circle cx="60" cy="60" r="38" fill="none" stroke="#ffb27a" stroke-width="16" pathLength="100" stroke-dasharray="25 75" stroke-dashoffset="-74" transform="rotate(-90 60 60)"/>
+                          </g>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="mock-rows">
+                      <div class="mr" style="--i:0"><span class="dot" style="--cat:#3ddc97"></span>Market run<em>$12,500</em></div>
+                      <div class="mr" style="--i:1"><span class="dot" style="--cat:#ffb27a"></span>Petrol<em>$15,000</em></div>
+                      <div class="mr" style="--i:2"><span class="dot" style="--cat:#9d8cff"></span>Tithe<em>$5,000</em></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="float f1"><span class="dot" style="--cat:#3ddc97"></span>Groceries <b>−$12,500</b></div>
+                <div class="float f2"><span class="okdot">✓</span>Budget on track</div>
+                <div class="float f3">▼ 12% vs last month</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MARQUEE -->
+        <section class="marquee-sec" aria-label="Examples of categories you can track" data-live>
+          <p class="marquee-label reveal">Track anything. Name it your way.</p>
+          <div class="marquee" id="marquee-a" aria-hidden="true"></div>
+          <div class="marquee reverse" id="marquee-b" aria-hidden="true"></div>
+        </section>
+
+        <!-- WHY -->
+        <section class="wrap sec" id="why">
+          <div class="sec-head reveal">
+            <p class="eyebrow">Why ATENOM</p>
+            <h2>Everything you need. Nothing you don't.</h2>
+          </div>
+          <div class="why-grid">
+            <div class="why-item spot reveal d1"><div class="feature-icon">🏷️</div><h3>Your own categories</h3><p>Create exactly the categories your life needs, each with its own color. Rename or remove them any time.</p></div>
+            <div class="why-item spot reveal d2"><div class="feature-icon">🎯</div><h3>Budgets that warn you</h3><p>Set a monthly limit per category. Bars turn yellow at 75% and red at 100%, before it hurts.</p></div>
+            <div class="why-item spot reveal d3"><div class="feature-icon">📊</div><h3>Reports that explain</h3><p>Trends over time, category shares, biggest expenses and a comparison with the last period.</p></div>
+            <div class="why-item spot reveal d4"><div class="feature-icon">🔒</div><h3>Private by default</h3><p>Everything is stored on your own device. Export a CSV whenever you want a copy.</p></div>
+          </div>
+        </section>
+
+        <!-- FEATURE ROW: CATEGORIES -->
+        <section class="wrap feature-row" id="feat-categories">
+          <div class="fr-copy">
+            <p class="eyebrow reveal">Categories</p>
+            <h2 class="reveal d1">Your money. Your categories.</h2>
+            <p class="reveal d2">Groceries, data, church, fuel, school fees, side hustle. Build the list that matches how you actually spend, pick a color for each and see it everywhere: tags, charts and budgets.</p>
+            <ul class="ticks reveal d3">
+              <li>Up to 20 categories, renamed any time</li>
+              <li>Create one in the middle of adding an expense</li>
+              <li>Colors stay readable in light and dark mode</li>
+            </ul>
+            <a class="text-arrow reveal d4" href="#overview">Try it in the app →</a>
+          </div>
+          <div class="fr-visual reveal d2" data-live aria-hidden="true">
+            <div class="vis">
+              <div class="vis-head"><b>Your categories</b><span class="vis-btn">+ Add</span></div>
+              <div class="chip-cloud">
+                <span class="vchip" style="--c:#3ddc97; --i:0">Groceries</span>
+                <span class="vchip" style="--c:#ffb27a; --i:1">Fuel</span>
+                <span class="vchip" style="--c:#9d8cff; --i:2">Church</span>
+                <span class="vchip" style="--c:#7ac1ff; --i:3">Data &amp; Airtime</span>
+                <span class="vchip" style="--c:#ff7ad1; --i:4">School fees</span>
+                <span class="vchip" style="--c:#ffd166; --i:5">Rent</span>
+                <span class="vchip" style="--c:#5eead4; --i:6">Side hustle</span>
+              </div>
+              <div class="vis-input"><span class="typing">Savings</span><span class="caret-blink"></span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURE ROW: BUDGETS -->
+        <section class="wrap feature-row flip" id="feat-budgets">
+          <div class="fr-copy">
+            <p class="eyebrow reveal">Budgets</p>
+            <h2 class="reveal d1">See trouble before it arrives.</h2>
+            <p class="reveal d2">Give every category a monthly limit. ATENOM adds them up for you and shows how much is left, with bars that change color as you get close.</p>
+            <ul class="ticks reveal d3">
+              <li>Yellow at 75%, red at 100%</li>
+              <li>One monthly total, worked out for you</li>
+              <li>"Budget left" always on your dashboard</li>
+            </ul>
+            <a class="text-arrow reveal d4" href="#reports">See budget vs actual →</a>
+          </div>
+          <div class="fr-visual reveal d2" data-live aria-hidden="true">
+            <div class="vis">
+              <div class="vis-head"><b>Budget by category</b><span class="vis-sub">this month</span></div>
+              <div class="vbar"><div class="vbar-label"><span><span class="dot" style="--cat:#3ddc97"></span>Groceries</span><em>$18,000 / $40,000</em></div><div class="vbar-track"><span class="vbar-fill ok" style="--to:.45"></span></div></div>
+              <div class="vbar"><div class="vbar-label"><span><span class="dot" style="--cat:#ffb27a"></span>Fuel</span><em>$16,400 / $20,000</em></div><div class="vbar-track"><span class="vbar-fill warn" style="--to:.82; --dl:.5s"></span></div></div>
+              <div class="vbar"><div class="vbar-label"><span><span class="dot" style="--cat:#7ac1ff"></span>Data</span><em>$3,100 / $3,000</em></div><div class="vbar-track"><span class="vbar-fill danger" style="--to:1; --dl:1s"></span></div></div>
+              <div class="float vf1">⚠ Fuel is at 82%</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURE ROW: REPORTS -->
+        <section class="wrap feature-row" id="feat-reports">
+          <div class="fr-copy">
+            <p class="eyebrow reveal">Reports</p>
+            <h2 class="reveal d1">Numbers that tell a story.</h2>
+            <p class="reveal d2">Pick a period and see the trend, the category breakdown, your biggest expenses and how the total compares with the period before.</p>
+            <ul class="ticks reveal d3">
+              <li>Daily or monthly trend, chosen automatically</li>
+              <li>Hover any bar or slice for the exact amount</li>
+              <li>Works with any amount up to a trillion</li>
+            </ul>
+            <a class="text-arrow reveal d4" href="#reports">Open Reports →</a>
+          </div>
+          <div class="fr-visual reveal d2" data-live aria-hidden="true">
+            <div class="vis">
+              <div class="vis-head"><b>Spending trend</b><span class="vis-sub">last 6 months</span></div>
+              <div class="vbars">
+                <span style="--h:.42; --i:0"></span><span style="--h:.58; --i:1"></span><span style="--h:.36; --i:2"></span>
+                <span style="--h:.74; --i:3"></span><span style="--h:.52; --i:4"></span><span style="--h:.9; --i:5"></span>
+              </div>
+              <div class="vbars-axis"><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span></div>
+              <div class="float vf2">Nov · $64,277 <b>▼ 12%</b></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURE ROW: PRIVACY -->
+        <section class="wrap feature-row flip" id="feat-privacy">
+          <div class="fr-copy">
+            <p class="eyebrow reveal">Export and privacy</p>
+            <h2 class="reveal d1">Your data stays yours.</h2>
+            <p class="reveal d2">Right now everything is stored in your own browser, on your own device, and nothing is sent to a server. Download a CSV copy whenever you like and open it in any spreadsheet.</p>
+            <ul class="ticks reveal d3">
+              <li>Stored on your device</li>
+              <li>Export exactly what you are looking at</li>
+              <li>Accounts and sync are planned for later</li>
+            </ul>
+            <a class="text-arrow reveal d4" href="#expenses">Go to Expenses →</a>
+          </div>
+          <div class="fr-visual reveal d2" data-live aria-hidden="true">
+            <div class="vis vis-center">
+              <div class="shield">
+                <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+                <span class="shield-core">🔒</span>
+              </div>
+              <div class="vis-lines"><span>Stored on this device</span><span>Export CSV anytime</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STATS BAND -->
+        <section class="stats-band" data-live>
+          <span class="band-orb" aria-hidden="true"></span>
+          <div class="wrap">
+            <div class="sec-head light reveal">
+              <p class="eyebrow">Built with room to grow</p>
+              <h2>Made for real life, not just spreadsheets.</h2>
+            </div>
+            <div class="band-grid">
+              <div class="band-stat reveal d1"><b><span class="count" data-to="14">0</span></b><span>currencies to display</span></div>
+              <div class="band-stat reveal d2"><b><span class="count" data-to="20">0</span></b><span>custom categories</span></div>
+              <div class="band-stat reveal d3"><b><span class="count" data-to="1">0</span>T</b><span>largest amount per expense</span></div>
+              <div class="band-stat reveal d4"><b><span class="count" data-to="100">0</span>%</b><span>stored on your device</span></div>
+            </div>
+            <div class="band-cta reveal"><a class="cta-btn big light" href="#overview">Start tracking</a></div>
+          </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="wrap sec" id="how">
+          <div class="sec-head reveal">
+            <p class="eyebrow">How it works</p>
+            <h2>From zero to clear in three steps.</h2>
+          </div>
+          <div class="steps-row">
+            <span class="steps-line" aria-hidden="true"></span>
+            <div class="step-card reveal d1"><span class="step-num big">1</span><h3>Create your categories</h3><p>Add the kinds of things you spend on and give each a color.</p></div>
+            <div class="step-card reveal d2"><span class="step-num big">2</span><h3>Log your expenses</h3><p>Name, amount, category, date. Edit or undo a delete any time.</p></div>
+            <div class="step-card reveal d3"><span class="step-num big">3</span><h3>Read the story</h3><p>Open Reports and watch trends, shares and budgets come to life.</p></div>
+          </div>
+        </section>
+
+        <!-- CLOSING CTA -->
+        <section class="wrap sec">
+          <div class="cta-band reveal" data-live>
+            <span class="cta-shine" aria-hidden="true"></span>
+            <h2>Ready to know where it all goes?</h2>
+            <p>Open the app and log your first expense in under a minute. No account needed.</p>
+            <div class="cta-row center">
+              <a class="cta-btn big light" href="#overview">Open the app</a>
+              <a class="cta-btn ghost big" href="#contact">Talk to us</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: RESOURCES ================= -->
+      <div class="view site hidden" id="view-resources" data-view="resources">
+
+        <section class="res-hero" data-live>
+          <div class="bg-orbs" aria-hidden="true">
+            <span class="orb-p"><i class="orb o1"></i></span>
+            <span class="orb-p"><i class="orb o3"></i></span>
+          </div>
+          <div class="wrap res-grid">
+            <div class="res-copy">
+              <h1 class="reveal">All the resources you need</h1>
+              <div class="search-box reveal d1">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="search" id="res-search" placeholder="What are you looking for?" aria-label="Search the guides" autocomplete="off">
+              </div>
+              <p class="res-hint reveal d2">Popular:
+                <button type="button" class="hint-chip" data-q="category">Categories</button>
+                <button type="button" class="hint-chip" data-q="budget">Budgets</button>
+                <button type="button" class="hint-chip" data-q="export">Export</button>
+                <button type="button" class="hint-chip" data-q="undo">Undo</button>
+              </p>
+            </div>
+            <div class="res-art reveal d2" aria-hidden="true">
+              <span class="art-disc"></span>
+              <span class="art-screen"><svg viewBox="0 0 100 100" fill="none"><path d="M12 82 49 14 88 82H68L49 47 31 82H12Z" fill="currentColor"/></svg></span>
+              <span class="art-ico a1">📄</span><span class="art-ico a2">💬</span><span class="art-ico a3">💡</span><span class="art-ico a4">🔍</span><span class="art-ico a5">✅</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="wrap sec res-cards-sec">
+          <div class="res-cards">
+            <a class="res-card spot reveal d1" href="#resources" data-scroll="guides">
+              <span class="rc-ico">📘</span><h3>Guides</h3><p>Step by step help for categories, budgets, reports and exporting.</p><span class="rc-go">Browse guides →</span>
+            </a>
+            <a class="res-card spot reveal d2" href="#faq">
+              <span class="rc-ico">💬</span><h3>FAQs</h3><p>Quick answers to the questions people ask most.</p><span class="rc-go">Read the FAQ →</span>
+            </a>
+            <a class="res-card spot reveal d3" href="#contact">
+              <span class="rc-ico">✉️</span><h3>Contact support</h3><p>Can't find it? Send us a message and we'll help.</p><span class="rc-go">Get in touch →</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="wrap sec" id="guides">
+          <div class="sec-head reveal">
+            <p class="eyebrow">Guides</p>
+            <h2>Learn ATENOM in minutes.</h2>
+          </div>
+          <div class="guide-grid" id="guide-grid">
+
+            <article class="guide spot reveal d1" data-text="getting started first steps begin open app create category add expense">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">🚀</span><span class="gt"><strong>Getting started</strong><em>Your first expense in under a minute</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Press <b>Open app</b> to reach your dashboard.</li>
+                <li>Click <b>⚙ Categories</b> and add the kinds of things you spend on.</li>
+                <li>Press <b>+ Add</b>, then enter a name, amount, category and date.</li>
+                <li>Open <b>Reports</b> to see where your money goes.</li>
+              </ol></div></div>
+            </article>
+
+            <article class="guide spot reveal d2" data-text="categories category colors rename delete create manage twenty">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">🏷️</span><span class="gt"><strong>Create and manage categories</strong><em>Rename, recolor, remove</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Click <b>⚙ Categories</b> on the Expenses page or the Budget card.</li>
+                <li>Use <b>+ Add category</b>, type a name and pick a color. You can have up to 20.</li>
+                <li>Rename or recolor any row. Expenses follow the rename automatically.</li>
+                <li>Deleting a category also deletes its expenses and budget, after you confirm and press Save.</li>
+              </ol></div></div>
+            </article>
+
+            <article class="guide spot reveal d3" data-text="budget budgets monthly limit warning yellow red left">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">🎯</span><span class="gt"><strong>Set monthly budgets</strong><em>Limits and early warnings</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Click the <b>Monthly budget</b> card in the menu.</li>
+                <li>Enter a limit for each category. Leave blank for no limit.</li>
+                <li>Your monthly budget is all the limits added together.</li>
+                <li>A bar turns yellow at 75% and red at 100%. <b>Budget left</b> shows what remains this month.</li>
+              </ol></div></div>
+            </article>
+
+            <article class="guide spot reveal d1" data-text="reports charts trend period compare previous donut ranking biggest">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">📊</span><span class="gt"><strong>Read your reports</strong><em>Trends, shares and comparisons</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Open <b>Reports</b> and choose a period, from This month to All time.</li>
+                <li>The trend chart switches between daily and monthly bars on its own.</li>
+                <li>Hover any bar or slice for the exact amount.</li>
+                <li>The Total spent card compares with the previous period. Budget vs actual shows this month.</li>
+              </ol></div></div>
+            </article>
+
+            <article class="guide spot reveal d2" data-text="export csv backup copy spreadsheet download data">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">⬇️</span><span class="gt"><strong>Export and back up</strong><em>Keep a copy of your records</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Open <b>Expenses</b> and apply any category or period filter you like.</li>
+                <li>Press <b>Export CSV</b>. The file holds exactly what you see.</li>
+                <li>Open it in Excel, Google Sheets or any spreadsheet app.</li>
+                <li>Your records live in your browser, so export regularly. Clearing browser data erases them.</li>
+              </ol></div></div>
+            </article>
+
+            <article class="guide spot reveal d3" data-text="edit delete undo search sort filter fix mistake">
+              <button class="guide-q" type="button" aria-expanded="false"><span class="gi">✏️</span><span class="gt"><strong>Edit, delete and undo</strong><em>Fix mistakes in seconds</em></span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><ol class="guide-steps">
+                <li>Press <b>✎</b> on a row to edit it, then Save changes.</li>
+                <li>Press <b>✕</b> to delete. An <b>Undo</b> button appears for a few seconds.</li>
+                <li>Search from the top bar, filter by category or period, and sort by date, amount or name.</li>
+              </ol></div></div>
+            </article>
+          </div>
+
+          <p class="no-results" id="guide-empty" hidden>No guides match that search. Try another word, browse the <a href="#faq">FAQ</a>, or <a href="#contact">contact us</a>.</p>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: ABOUT ================= -->
+      <div class="view info hidden" id="view-about" data-view="about">
+
+        <section class="single">
+          <div class="card hero">
+            <p class="eyebrow">About ATENOM</p>
+            <h2>Know where your money goes.</h2>
+            <p class="lead">ATENOM is a simple, fast expense tracker. Log what you spend, group it in your own categories, set budgets and see the story in clear reports. You don't need an account to start.</p>
+            <div class="cta-row">
+              <a class="cta-btn" href="#overview">Open the dashboard</a>
+              <a class="cta-btn ghost" href="#faq">Read the FAQ</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="feature-grid">
+          <div class="card">
+            <div class="feature-icon">🏷️</div>
+            <h3>Your own categories</h3>
+            <p>Groceries, data, church, fuel, school fees. Create the categories that match your life, pick a color for each, and rename or remove them any time.</p>
+          </div>
+          <div class="card">
+            <div class="feature-icon">🎯</div>
+            <h3>Budgets that warn you</h3>
+            <p>Set a monthly budget per category. The bars turn yellow at 75% and red when you pass 100%, so you see trouble before it arrives.</p>
+          </div>
+          <div class="card">
+            <div class="feature-icon">📊</div>
+            <h3>Reports that explain</h3>
+            <p>See spending over time, a breakdown by category, your biggest expenses and how this month compares with the last.</p>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card">
+            <h3>How it works</h3>
+            <ol class="steps">
+              <li><span class="step-num">1</span><div><strong>Create your categories.</strong> Click ⚙ Categories and add the kinds of things you spend on.</div></li>
+              <li><span class="step-num">2</span><div><strong>Log your expenses.</strong> Press + Add, enter a name, amount, category and date. Edit or undo a delete whenever you need.</div></li>
+              <li><span class="step-num">3</span><div><strong>Read the story.</strong> Open Reports to see trends, category shares and how your budgets are holding up.</div></li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card">
+            <h3>Private by default</h3>
+            <p class="body-text">Right now everything you enter is stored in your own browser on this device. Nothing is sent to a server. That also means clearing your browser data removes your records, so use Export CSV on the Expenses page to keep a copy. Accounts and syncing across devices are planned for later.</p>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card cta-card">
+            <h3>Help make ATENOM more useful</h3>
+            <p class="body-text">Use it for a few weeks and tell us where you get stuck. Share an idea, report a problem, or suggest a feature you wish it had.</p>
+            <div class="cta-row">
+              <a class="cta-btn" href="#contact">Get in touch</a>
+              <a class="cta-btn ghost" href="#overview">Open the dashboard</a>
+              <button class="secondary" data-action="auth" data-auth="signup">Sign up</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: FAQ ================= -->
+      <div class="view info hidden" id="view-faq" data-view="faq">
+
+        <section class="single">
+          <div class="card hero">
+            <p class="eyebrow">FAQ</p>
+            <h2>Questions, answered.</h2>
+            <p class="lead">The quick answers to what people ask most. Can't find yours? Use the Contact page.</p>
+          </div>
+        </section>
+
+        <section class="single">
+          <div class="card faq-list">
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>Where is my data stored? Is it private?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>In your own browser, on this device. Nothing is sent to a server. Clearing your browser data erases it, so use Export CSV on the Expenses page to keep a copy.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>How do I create my own categories?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Click ⚙ Categories (on the Expenses page, or the Budget card on Overview), or use "+ New or edit categories" when adding an expense. Add as many as 20, give each a color, then press Save.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>Does the currency picker convert my amounts?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>No. It only changes the symbol shown next to your amounts. The numbers stay exactly as you entered them.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>How do budgets work?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Click the Monthly budget card in the menu and set a limit for each category. Your monthly budget is all of them added together. A category bar turns yellow at 75% of its limit and red at 100%.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>Can I edit an expense, or undo a delete?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Yes. Press ✎ on any row to edit it. After you delete an expense, an Undo button appears for a few seconds at the bottom of the screen.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>What happens if I delete a category?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Its expenses and its budget are deleted with it. You are asked to confirm first, and nothing changes until you press Save.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>How do I export my expenses?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Open the Expenses page and press Export CSV. The file contains exactly the expenses you are looking at, so apply a category or period filter first if you only want some of them.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>What is the largest amount I can enter?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>One trillion (1,000,000,000,000) for a single expense or a single category budget.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false"><span>Do I need an account?</span><span class="chev">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner"><p>Not yet. The Log in and Sign up buttons are placeholders for accounts that are coming later, which will let your records follow you across devices.</p></div></div>
+            </div>
+
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= PAGE: CONTACT ================= -->
+      <div class="view info hidden" id="view-contact" data-view="contact">
+
+        <section class="single">
+          <div class="card hero">
+            <p class="eyebrow">Contact</p>
+            <h2>We'd love to hear from you.</h2>
+            <p class="lead">Questions, feedback, bugs or partnerships. Tell us what's on your mind.</p>
+          </div>
+        </section>
+
+        <section class="charts">
+          <div class="card">
+            <h3>Send a message</h3>
+
+            <label for="contact-name">Your name</label>
+            <input type="text" id="contact-name" maxlength="80" placeholder="Your name">
+
+            <label for="contact-from">Your email</label>
+            <input type="email" id="contact-from" maxlength="120" placeholder="you@example.com">
+
+            <label for="contact-topic">Topic</label>
+            <select id="contact-topic">
+              <option>Question</option>
+              <option>Feedback</option>
+              <option>Bug report</option>
+              <option>Partnership</option>
+            </select>
+
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" maxlength="2000" placeholder="How can we help?"></textarea>
+
+            <div class="modal-buttons">
+              <button id="contact-send">Send message</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Other ways to reach us</h3>
+            <p class="body-text">Prefer email? Write to <a class="text-link" data-contact-email href="#"></a>.</p>
+            <p class="body-text">Tell us where you get stuck, introduce us to a community, or suggest a feature. Every message helps make ATENOM better.</p>
+          </div>
+        </section>
+      </div>
+
+      <footer class="site-footer">
+        <span>© <span data-year></span> ATENOM</span>
+        <span class="footer-links">
+          <a href="#about">About</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </span>
+      </footer>
+
+      <!-- Full footer: shown on the website pages (Home, Resources, About, FAQ, Contact) -->
+      <footer class="footer-rich">
+        <div class="wrap footer-grid">
+          <div class="fcol fbrand">
+            <a class="logo" href="#home" aria-label="ATENOM home">
+              <svg class="atenom-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                <path d="M12 82 49 14 88 82H68L49 47 31 82H12Z" fill="currentColor"/>
+                <path d="M31 82 49 49 68 82" stroke="var(--bg)" stroke-width="8"/>
+              </svg>
+              <span>ATENOM</span>
+            </a>
+            <p>Simple, private expense tracking with your own categories, budgets and clear reports.</p>
+          </div>
+          <div class="fcol">
+            <h4>Explore</h4>
+            <a href="#home">Home</a>
+            <a href="#home" data-scroll="why">Features</a>
+            <a href="#home" data-scroll="how">How it works</a>
+            <a href="#overview">Open the app</a>
+          </div>
+          <div class="fcol">
+            <h4>Resources</h4>
+            <a href="#resources">Help center</a>
+            <a href="#resources" data-scroll="guides">Guides</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div class="fcol">
+            <h4>Company</h4>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+            <button type="button" class="flink" data-action="auth" data-auth="login">Log in</button>
+            <button type="button" class="flink" data-action="auth" data-auth="signup">Sign up</button>
+          </div>
+        </div>
+        <div class="wrap footer-bottom">
+          <span>© <span data-year></span> ATENOM. All rights reserved.</span>
+          <span>Your data stays on your device.</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========== THE POPUP (MODAL) ========== -->
+  <div class="modal-overlay hidden" id="modal">
+    <div class="modal-box">
+      <h3 id="modal-title">Add an expense</h3>
+
+      <label for="name">Name</label>
+      <input type="text" id="name" placeholder="What did you buy?">
+
+      <label for="amount">Amount</label>
+      <input type="number" id="amount" min="0" max="1000000000000" step="0.01" placeholder="0.00">
+
+      <label for="category">Category</label>
+      <select id="category"></select>
+      <button type="button" class="link-btn" id="edit-categories-btn">+ New or edit categories</button>
+
+      <label for="date">Date</label>
+      <input type="date" id="date">
+
+      <div class="modal-buttons">
+        <button id="cancel-btn" class="secondary">Cancel</button>
+        <button id="add-btn">Save expense</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== THE INCOME POPUP ========== -->
+  <div class="modal-overlay hidden" id="income-modal">
+    <div class="modal-box">
+      <h3 id="income-modal-title">Add income</h3>
+
+      <label for="inc-name">Name</label>
+      <input type="text" id="inc-name" placeholder="e.g. Monthly salary">
+
+      <label for="inc-amount">Amount</label>
+      <input type="number" id="inc-amount" min="0" max="1000000000000" step="0.01" placeholder="0.00">
+
+      <label for="inc-source">Source</label>
+      <input type="text" id="inc-source" list="inc-sources" maxlength="30" placeholder="e.g. Salary, Business, Gift">
+      <datalist id="inc-sources"></datalist>
+
+      <label for="inc-date">Date</label>
+      <input type="date" id="inc-date">
+
+      <div class="modal-buttons">
+        <button id="inc-cancel" class="secondary">Cancel</button>
+        <button id="inc-save">Save income</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== THE BUDGET POPUP ========== -->
+  <div class="modal-overlay hidden" id="budget-modal">
+    <div class="modal-box">
+      <h3>Monthly budgets</h3>
+      <p class="modal-help">Set a limit for each category. Leave blank for no limit.</p>
+
+      <div id="budget-fields">
+        <!-- JavaScript builds one box per category here -->
+      </div>
+
+      <div class="modal-buttons">
+        <button id="cancel-budget-btn" class="secondary">Cancel</button>
+        <button id="save-budget-btn">Save budgets</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== THE CATEGORIES POPUP ========== -->
+  <div class="modal-overlay hidden" id="category-modal">
+    <div class="modal-box">
+      <h3>Your categories</h3>
+      <p class="modal-help" id="category-help"></p>
+
+      <div id="category-rows" class="cat-rows">
+        <!-- JavaScript builds one row per category here -->
+      </div>
+
+      <button type="button" class="secondary add-row-btn" id="add-category-row">+ Add category</button>
+
+      <div class="modal-buttons">
+        <button id="cancel-category-btn" class="secondary">Cancel</button>
+        <button id="save-category-btn">Save categories</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hover tooltip for charts, and the little message bar (Undo, Exported...) -->
+  <div class="chart-tip" id="chart-tip"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Load the script ONCE, at the very end of <body> -->
+  <script src="../static/script.js"></script>
+</body>
+</html>
